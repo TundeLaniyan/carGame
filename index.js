@@ -1,12 +1,17 @@
 $score = document.querySelector(".score");
 $startScreen = document.querySelector(".start-screen");
 $gameArea = document.querySelector(".game-area");
+$joyStick = document.querySelector(".joys-stick");
+
+const gameWidth = $gameArea.offsetWidth;
 
 const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
 const player = { speed: 10, score: 0 };
 const enemyColor = ["red", "green", "yellow"];
+const enemyLocation = [];
 
 $startScreen.addEventListener("click", start);
+$joyStick.addEventListener("click", joyStick);
 document.addEventListener("keydown", pressOn);
 document.addEventListener("keyup", pressOff);
 
@@ -22,9 +27,11 @@ function pressOff(e) {
 
 function start() {
     $startScreen.classList.add("hide");
-    $gameArea.innerHTML = "";
+    $gameArea.innerHTML = '';
+    // $gameArea.innerHTML = '<div class="joys-stick"><div class="joys-stick__touch"></div></div>';
     player.score = 0;
     player.start = true;
+    enemyLocation.length = 0;
     window.requestAnimationFrame(playGame);
     for (let y = 0; y <= 10; y++) {
         let $line = document.createElement("div");
@@ -39,8 +46,9 @@ function start() {
         $enemy.classList.add("enemy--" + y);
         $enemy.y = -(y * 600);
         $enemy.style.top = $enemy.y + "px";
-        $enemy.style.left = Math.floor(Math.random() * 350) + "px";
+        $enemy.style.left = Math.floor(Math.random() * (gameWidth - 50)) + "px";
         $enemy.style.backgroundColor = randomColor();
+        enemyLocation.push($enemy.style.left.split("px")[0] * 1);
         $gameArea.appendChild($enemy);
     }
     let $car = document.createElement("div");
@@ -66,7 +74,7 @@ function moveEnemy($car) {
         isColide($car, $enemy) && endGame();
         if ($enemy.y > 1500) {
             $enemy.y = -600;
-            $enemy.style.left = Math.floor(Math.random() * 350) + "px";
+            $enemy.style.left = setEnemyLocation();
             $enemy.style.backgroundColor = randomColor();
         }
         $enemy.y += player.speed + ($enemy.className.split("--")[1]*1);
@@ -89,6 +97,23 @@ function isColide($a, $b) {
 function randomColor() {
     const color = () => Math.floor(Math.random() * 255);
     return `rgb(${color()}, ${color()}, ${color()})`;
+}
+
+function setEnemyLocation() {
+    enemyLocation.pop();
+    let unique = [0];
+    let location;
+    while (unique.length) {
+        location = Math.floor(Math.random() * (gameWidth - 50));
+        unique = enemyLocation.filter(cur => !(location - 50 > cur || location < cur - 50));
+    }
+    enemyLocation.unshift(location);
+    return location + "px";
+}
+
+function joyStick(e) {
+    console.log({$joyStick});
+    console.log(e.x, e.y);
 }
 
 function playGame() {
