@@ -11,7 +11,7 @@ const enemyColor = ["red", "green", "yellow"];
 const enemyLocation = [];
 
 $startScreen.addEventListener("click", start);
-$joyStick.addEventListener("click", joyStick);
+$joyStick?.addEventListener("click", joyStick);
 document.addEventListener("keydown", pressOn);
 document.addEventListener("keyup", pressOff);
 
