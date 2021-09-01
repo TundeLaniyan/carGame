@@ -1,7 +1,6 @@
 $score = document.querySelector(".score");
 $startScreen = document.querySelector(".start-screen");
 $gameArea = document.querySelector(".game-area");
-$joyStick = document.querySelector(".joys-stick");
 
 const gameWidth = $gameArea.offsetWidth;
 
@@ -11,12 +10,12 @@ const enemyColor = ["red", "green", "yellow"];
 const enemyLocation = [];
 
 $startScreen.addEventListener("click", start);
-$joyStick?.addEventListener("click", joyStick);
 document.addEventListener("keydown", pressOn);
 document.addEventListener("keyup", pressOff);
 
 function pressOn(e) {
     e.preventDefault();
+    if (e.key === 'Enter' && !player.start) start();
     keys[e.key] = true;
 }
 
@@ -28,7 +27,6 @@ function pressOff(e) {
 function start() {
     $startScreen.classList.add("hide");
     $gameArea.innerHTML = '';
-    // $gameArea.innerHTML = '<div class="joys-stick"><div class="joys-stick__touch"></div></div>';
     player.score = 0;
     player.start = true;
     enemyLocation.length = 0;
@@ -53,6 +51,7 @@ function start() {
     }
     let $car = document.createElement("div");
     $car.classList.add("car");
+    dragElement($car);
 
     $gameArea.appendChild($car);
     player.x = $car.offsetLeft;
@@ -111,11 +110,6 @@ function setEnemyLocation() {
     return location + "px";
 }
 
-function joyStick(e) {
-    console.log({$joyStick});
-    console.log(e.x, e.y);
-}
-
 function playGame() {
     let $car = document.querySelector(".car");
     let road = $gameArea.getBoundingClientRect();
@@ -140,3 +134,44 @@ function endGame() {
     $score.innerHtml = "Game Over <br /> Score was " + Math.floor(player.score);
     $startScreen.classList.remove("hide");
 }
+
+
+function dragElement(elmnt) {
+    elmnt.onmousedown = dragMouseDown;
+    elmnt.ontouchstart = dragMouseDown;
+  
+    function dragMouseDown(e) {
+      e = e || window.event;
+      e.preventDefault();
+      // get the mouse cursor position at startup:
+      elmnt.ontouchend = closeDragElement;
+      elmnt.onmouseup = closeDragElement;
+      // call a function whenever the cursor moves:
+      elmnt.ontouchmove = elementDrag;
+      elmnt.onmousemove = elementDrag;
+    }
+  
+    function elementDrag(e) {
+      e = e || window.event;
+      e.preventDefault();
+      const leftPosition = e.targetTouches['0'].clientX - elmnt.offsetLeft;
+      const topPosition = e.targetTouches['0'].clientY - elmnt.offsetTop - $gameArea.offsetTop;
+      if (leftPosition < -10) keys.ArrowLeft = true;
+      else if (leftPosition > 60) keys.ArrowRight = true;
+      else stopMovement();
+      if (topPosition < -10) keys.ArrowUp = true;
+      else if (topPosition > 110) keys.ArrowDown = true;
+      else stopMovement();
+    }
+  
+    function closeDragElement() {
+      stopMovement();
+    }
+
+    function stopMovement() {
+        keys.ArrowUp = false;
+        keys.ArrowDown = false;
+        keys.ArrowLeft = false;
+        keys.ArrowRight = false;
+    }
+  }
