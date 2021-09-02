@@ -156,11 +156,11 @@ function dragElement(elmnt) {
       e.preventDefault();
       const leftPosition = e.targetTouches['0'].clientX - elmnt.offsetLeft;
       const topPosition = e.targetTouches['0'].clientY - elmnt.offsetTop - $gameArea.offsetTop;
-      if (leftPosition < -10) keys.ArrowLeft = true;
-      else if (leftPosition > 60) keys.ArrowRight = true;
+      if (leftPosition < 0) keys.ArrowLeft = true;
+      else if (leftPosition > 50) keys.ArrowRight = true;
       else stopMovement();
-      if (topPosition < -10) keys.ArrowUp = true;
-      else if (topPosition > 110) keys.ArrowDown = true;
+      if (topPosition < 0) keys.ArrowUp = true;
+      else if (topPosition > 100) keys.ArrowDown = true;
       else stopMovement();
     }
   
